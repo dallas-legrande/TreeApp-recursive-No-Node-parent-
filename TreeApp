@@ -1,0 +1,140 @@
+package lab3_binary_tree_recursive;
+/*
+ * Authors: Dallas LeGrande 
+ * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
+ * Date: February 9, 2018
+ * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
+ * to the text file using recursion instead of iteration in the insert and delete method.
+*/
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+
+
+class TreeApp {
+        
+	public static void main(String[] args) throws IOException {
+            String[] words;              
+            Tree theTree = new Tree();
+
+            //assigns the variable "path" the routing information to find the input text file needed
+            Path path =  Paths.get("./input/input.txt");
+                
+            //opens the bufferedreader to be able to read a file. The file location is held in the variable "path"
+            try (BufferedReader reader = Files.newBufferedReader(path)){
+               String line;
+               
+               //reads line by line until the line is null and the document is complete
+               while ((line = reader.readLine()) != null)
+               {
+                   
+                   /*splits a line every time there is a space and puts each word in the line into the array
+                     each time a line is read it starts over in the array and puts the words into the array starting at spot "0"
+                     "two dogs" gets put into the array as array[0] = two and array[1] = dogs
+                     if the next line of the text file reads "three cats" they will overwrite the original array as array[0]= three and array[1] = cats thus
+                     re-writing array[0] and array[1]. "two" and "dogs" have now been written over and are no longer reachable
+                   */
+                    words = line.split(" ");
+                    switch(words[0])
+                        {
+                            //if the first word in the array is "insert" then go to the next string in the array, split it by commas,
+                            //parse the new strings into ints and insert them into the tree
+                            case "insert":
+
+                                //splits the line every time there is a comma and puts each word into an array
+                                String[] numbers = words[1].split(",");
+                                System.out.print("Inserting: ");
+
+                                //inserts the numbers into the tree
+                                for(int j = 0; j < numbers.length; j++)
+                                    {
+                                        String oneNumber = numbers[j];
+
+                                        //converts the string to an int
+                                        int input = Integer.parseInt(oneNumber);
+                                        theTree.insert(input, input + .9);
+
+                                        //prints a comma after each number except the last one
+                                        if(j < numbers.length-1)
+                                        {
+                                            System.out.print(numbers[j] + ",");
+                                        }  
+                                        else{
+                                            System.out.print(numbers[j]);
+                                        }
+                                    }
+                                System.out.println();
+                                break;
+
+                            //if the first word in the array is "find" then it looks at the next string, parses it to an int and 
+                            //looks in the tree for node with that number
+                            case "find":
+                                System.out.println();
+                                Node found = theTree.find(Integer.parseInt(words [1]));
+                                System.out.println("Found: {" + found.iData + ", " + found.dData + "}");   
+                                break;
+
+                            //if the first word in the array is "delete" then it looks for the next string, parses it to an int and
+                            //deletes it from the tree (if the Node exists)
+                            case "delete":
+                                System.out.println();
+                                boolean removed = theTree.delete(Integer.parseInt(words [1]));
+                                if(removed)
+                                {
+                                    System.out.println("Deleted: " + Integer.parseInt(words [1]));
+                                }
+                                else{
+                                    System.out.println("Node " + Integer.parseInt(words [1]) + " does not exist");
+                                }
+                                
+                                break;
+
+                            /*if the first word of the array is "traverse" then it looks for the next string
+                              if the next string is a 1, then it performs a Preorder traversal
+                              if the next string is a 2, then it performs a Inorder traversal
+                              if the next string is a 3, then it performs a Postorder traversal
+                            */
+                            case "traverse":
+                                switch (words[1]) {
+                                    case "1":
+                                        theTree.traverse(1);
+                                        break;
+                                    case "2":
+                                        theTree.traverse(2);
+                                        break;
+                                    default:
+                                        theTree.traverse(3);
+                                        break;
+                                }
+                                break;//breaks the "traverse" case
+
+                            //if the first word of the array is "min" then it looks for the Node with the smallest idata number
+                            case "min":
+                                System.out.println();
+                                Node min = theTree.findMin();
+                                System.out.println("Min: {" + min.iData + ", " + min.dData + "}");
+                                break;
+
+                            //if the first word of the array is "max" then it looks for the Node with the largest idata number
+                            case "max":
+                                System.out.println();
+                                    Node max = theTree.findMax();
+                                    System.out.println("Max: {" + max.iData + ", " + max.dData + "}");
+                                    break;
+                        }//end of switch          
+               }//end of while loop   
+           }//end of try
+            catch (IOException x)
+            {
+                System.err.format("IOException: %s%n",x);
+            }
+        
+            theTree.displayTree();
+	} // end main()
+
+}  // end TreeApp class
+////////////////////////////////////////////////////////////////
