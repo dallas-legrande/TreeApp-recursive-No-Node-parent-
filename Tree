@@ -1,0 +1,297 @@
+package lab3_binary_tree_recursive;
+
+import java.util.Stack;
+
+
+/*
+ * Authors: Dallas LeGrande 
+ * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
+ * Date: February 9, 2018
+ * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
+ * to the text file using recursion instead of iteration in the insert and delete method.
+ */
+class Tree {
+	private Node root;                 // first Node of Tree
+        boolean isLeftChild = true;
+        boolean wasDeleted = false;
+	
+	public Tree() {                    // constructor
+		root = null;                   // no nodes in tree yet
+	}
+	
+	
+	public Node find(int key) {      // find node with given key
+		Node current = root;         // (assumes non-empty tree)
+		while (current.iData != key) {          // while no match
+			if (key < current.iData) {          // go left?
+				current =  current.leftChild; 
+			}
+			else {                              // or go right?
+				current =  current.rightChild;
+			}
+			if(current == null)                 // if no child
+			{                                   // didn't find it
+				return null;              
+			}			
+		}
+		return current;                         // found it
+	}  //end find()
+	
+	
+	public void insert(int id, double dd) {    
+                root = insert(root, id, dd); //calls the recursive insert method
+	} // end insert()
+        
+        public Node insert(Node current, int id, double dd)
+        {
+            // If the node sent in is null. Create a new node and return it as the root for the next node 
+            if(current == null) 
+            {
+                current = new Node (id,dd);
+                return current;
+            }
+            
+            // If the id data sent in is smaller than the current root node then it needs to be the left child of that root
+            // If the root already has a left child then it will check to see if it is less than or greater than that child and on and on
+            if(id < current.iData )
+            {
+                current.leftChild = insert(current.leftChild, id, dd);
+            }
+            
+            // If the id data is not less than the current node then it must be greater than the node and should therefore be the right child of the current node
+            else{
+                current.rightChild = insert(current.rightChild, id, dd);
+            }
+            return current;
+        }
+	
+	public boolean delete(int key) {             // delete node with given key
+            if(root == null) // Tree is empty everything is deleted
+            {
+                return true;
+            }
+            
+            delete(root, key); // calls the recursive delete method and passes in the root
+            return wasDeleted; // returns true or false depending on whether the node was in the tree or not
+	}// end delete()
+
+        // Method for deleting nodes recursively
+	public Node delete(Node input, int key)
+        {
+            Node current = input;		             // (assumes non-empty list)	
+            if (current.iData != key) {           // search for Node
+                if (key < current.iData) {           // go left?
+                    if(current.leftChild == null) // If the left child is null then the node is not in the tree
+                    {
+                        return current;
+                    }
+                    
+                    // if the current node has a left child send that node to be checked for deletion
+                    // if the node gets deleted the left child of the current node is set to the successor of the deleted node
+                    current.leftChild = delete(current.leftChild, key);
+                    return current;
+                    }
+                else {   // or go right?
+                    if(current.rightChild == null) // If the right child is null then the node is not in the tree
+                    {
+                        return current;
+                    }
+                    
+                    // if the current node has a right child send that node to be checked for deletion
+                    // if the node gets deleted the right child of the current node is set to the successor of the deleted node
+                        current.rightChild = delete(current.rightChild, key);
+                        return current;
+                }
+                
+            }
+		//found the node to delete
+                
+                //sets the boolean to true so it is known that the node was in the tree
+                wasDeleted = true;
+                
+		//if no children, simply delete it
+		if (current.leftChild == null && current.rightChild == null) {
+			if (current == root) {              // if root,
+				root = null;        // tree is empty
+                                return root;
+			}
+                            //if the tree is not empty and the current node does not have any children, delete the node
+			else {
+				current = null;
+                                return current;
+			}
+		}
+		//if no right child, replace with left subtree
+		else if (current.rightChild == null) {  
+			if (current == root) {
+				root = current.leftChild;
+                                return root;
+			}
+			else {
+                                return current.leftChild;
+			}
+		}
+
+		//if no left child, replace with right subtree
+		else if (current.leftChild == null) {  
+			if (current == root) {
+				root = current.rightChild;
+                                return root;
+			}
+			else {
+                            return current.rightChild;
+			}
+		}
+		else { // two children, so replace with inorder successor
+			   // get successor of node to delete (current)
+			Node successor = getSuccessor(current);
+
+			// connect parent of current to successor instead
+			if (current == root) {
+				root = successor;
+			}
+			else {
+                            /*  sets the node being deleted to a temp node
+                                replaces the node being deleted with its successor
+                                sets the deleted nodes left child to now be the successors left child
+                            */
+                                Node temp = current;
+				current = successor;
+                                current.leftChild = temp.leftChild;
+                                return current;
+			}
+		} // end else two children
+		// (successor cannot have a left child)
+		return root;      
+        }
+	//returns node with next-highest value after delNode
+	//goes right child, then right child's left descendants
+	private Node getSuccessor(Node delNode) {
+		Node successorParent = delNode;
+		Node successor = delNode;
+		Node current = delNode.rightChild;        // go to the right child
+		while (current != null) {                 // until no more
+			successorParent = successor;          // left children
+			successor = current;
+			current = current.leftChild;
+		}
+
+		if (successor != delNode.rightChild) {    // if successor not right child,
+			//make connections
+			successorParent.leftChild = successor.rightChild;
+			successor.rightChild = delNode.rightChild;
+		}
+		return successor;
+	}
+
+	
+	public void traverse(int traverseType) {
+		switch (traverseType) {
+		case 1:
+			System.out.print("\nPreorder traversal: ");
+			preOrder(root);
+			break;
+		case 2:
+			System.out.print("\nInorder traversal: ");
+			inOrder(root);
+			break;
+		case 3:
+			System.out.print("\nPostorder traversal: ");
+			postOrder(root);
+			break;
+		default:
+			System.out.print("Invalid traversal type\n");
+			break;
+		}
+		System.out.println();
+	}
+
+	
+	private void preOrder(Node localRoot) {
+		if (localRoot != null) {
+			System.out.print(localRoot.iData + " ");	
+			preOrder(localRoot.leftChild);
+			preOrder(localRoot.rightChild);	
+		}
+	}
+
+	
+	private void inOrder(Node localRoot) {
+		if (localRoot != null) {
+			inOrder(localRoot.leftChild);
+			System.out.print(localRoot.iData + " ");
+			inOrder(localRoot.rightChild);		
+		}
+	}
+
+	
+	private void postOrder(Node localRoot) {
+		if (localRoot != null) {
+			postOrder(localRoot.leftChild);
+			postOrder(localRoot.rightChild);
+			System.out.print(localRoot.iData + " ");		
+		}
+	}
+
+	
+	public void displayTree() {
+		Stack<Node> globalStack = new Stack<Node>();
+		globalStack.push(root);
+		int nBlanks = 32;
+		boolean isRowEmpty = false;
+		System.out.println(
+				".................................................................");
+		while (isRowEmpty==false) {
+			Stack<Node> localStack = new Stack<Node>();
+			isRowEmpty = true;
+			
+			for (int j = 0; j < nBlanks; j++) {
+				System.out.print(' ');
+			}
+
+			while (globalStack.isEmpty()==false) {
+				Node temp = (Node) globalStack.pop();
+				if (temp != null) {
+					System.out.print(temp.iData);
+					localStack.push(temp.leftChild);
+					localStack.push(temp.rightChild);
+					if (temp.leftChild != null ||
+							temp.rightChild != null) {
+						isRowEmpty = false;
+					}
+				}
+				else {
+					System.out.print("--");
+					localStack.push(null);
+					localStack.push(null);
+				}
+
+				for (int j = 0; j < nBlanks*2-2; j++) {
+					System.out.print(' ');
+				}
+			} 
+			System.out.println();
+			nBlanks /= 2;
+			while (localStack.isEmpty()==false) {
+				globalStack.push(localStack.pop());
+			} // end while isRowEmpty is false
+			System.out.println(
+			".................................................................");
+		}// end while globalStack not empty
+	} // end displayTree()
+        public Node findMin(){
+            Node min = root;         // (assumes non-empty tree)
+		while (min.leftChild != null) {          // while min has a left child
+			min = min.leftChild;		
+                }
+                return min;
+        }
+        public Node findMax(){
+            Node max = root;
+            while (max.rightChild != null) {          // while min has a left child
+			max = max.rightChild;		
+                }
+            return max;
+        }
+}// end class Tree
+////////////////////////////////////////////////////////////////
