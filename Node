@@ -1,0 +1,38 @@
+package lab3_binary_tree_recursive;
+
+/**
+ * Authors: Dallas LeGrande 
+ * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
+ * Date: February 9, 2018
+ * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
+ * to the text file using recursion instead of iteration in the insert and delete method.
+ */
+
+public class Node {
+    public int iData;           // data item (key)
+    public double dData;        // data item
+    public Node leftChild;      // this Node's left child
+    public Node rightChild;     // this Node's right child
+    public int frequency = 0;   // number of times this node is used
+    public Node parent;
+    
+    public Node(int a, double b)
+    {
+        iData = a;
+        dData = b;
+        leftChild = null;
+        rightChild = null;
+    }
+    
+    public void displayNode() { // display ourself
+            System.out.print('{');
+            System.out.print(iData);
+            System.out.print(", ");
+            System.out.print(dData);
+            System.out.print("} ");		
+    }
+    public void increaseCount()
+    {
+        frequency++;
+    }
+}
