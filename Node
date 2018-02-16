@@ -14,7 +14,6 @@ public class Node {
     public Node leftChild;      // this Node's left child
     public Node rightChild;     // this Node's right child
     public int frequency = 0;   // number of times this node is used
-    public Node parent;
     
     public Node(int a, double b)
     {
