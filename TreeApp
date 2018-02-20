@@ -1,12 +1,12 @@
-package lab3_binary_tree_recursive;
+package avlTree;
 /*
- * Authors: Dallas LeGrande 
+ * Authors: Dallas LeGrande, Selene Smith
  * TreeApp source code from (Robert Lafore. 2002. Data Structures and Algorithms in Java (2 ed.). Sams, Indianapolis, IN, USA)
- * Date: February 9, 2018
+ * Date: February 16, 2018
  * Overview: This version of the TreeApp program takes input from a text file and creates a tree from the data and manipulates the tree according
  * to the text file using recursion instead of iteration in the insert and delete method.
-*/
-
+ * The app is now a self-balancing AVL tree rather than a standard BST
+ */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -125,6 +125,11 @@ class TreeApp {
                                     Node max = theTree.findMax();
                                     System.out.println("Max: {" + max.iData + ", " + max.dData + "}");
                                     break;
+                            case "show":
+                                 theTree.displayTree();
+                                 break;
+                            default:
+                                System.out.println("Invalid operation chosen");
                         }//end of switch          
                }//end of while loop   
            }//end of try
@@ -133,7 +138,7 @@ class TreeApp {
                 System.err.format("IOException: %s%n",x);
             }
         
-            theTree.displayTree();
+           
 	} // end main()
 
 }  // end TreeApp class
